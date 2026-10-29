@@ -1,0 +1,49 @@
+$ next build
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+   ▲ Next.js 16.0.10 (Turbopack)
+   - Environments: .env
+
+   Creating an optimized production build ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ✓ Compiled successfully in 2.1s
+   Running TypeScript ...
+   Collecting page data using 7 workers ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+Error: Failed to load external module bcrypt: Error: Cannot find module '/Users/dam135/Desktop/Dashboard/nextjs-dashboard/node_modules/.pnpm/bcrypt@5.1.1/node_modules/bcrypt/lib/binding/napi-v3/bcrypt_lib.node'
+Require stack:
+- /Users/dam135/Desktop/Dashboard/nextjs-dashboard/node_modules/.pnpm/bcrypt@5.1.1/node_modules/bcrypt/bcrypt.js
+- /Users/dam135/Desktop/Dashboard/nextjs-dashboard/.next/server/chunks/[root-of-the-server]__1b3e742b._.js
+- /Users/dam135/Desktop/Dashboard/nextjs-dashboard/.next/server/chunks/[turbopack]_runtime.js
+- /Users/dam135/Desktop/Dashboard/nextjs-dashboard/.next/server/app/seed/route.js
+- /Users/dam135/Desktop/Dashboard/nextjs-dashboard/node_modules/.pnpm/next@16.0.10_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/server/require.js
+- /Users/dam135/Desktop/Dashboard/nextjs-dashboard/node_modules/.pnpm/next@16.0.10_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/server/load-components.js
+- /Users/dam135/Desktop/Dashboard/nextjs-dashboard/node_modules/.pnpm/next@16.0.10_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/build/utils.js
+- /Users/dam135/Desktop/Dashboard/nextjs-dashboard/node_modules/.pnpm/next@16.0.10_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/build/worker.js
+- /Users/dam135/Desktop/Dashboard/nextjs-dashboard/node_modules/.pnpm/next@16.0.10_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/dist/compiled/jest-worker/processChild.js
+    at Context.externalRequire [as x] (.next/server/chunks/[turbopack]_runtime.js:514:15)
+    at module evaluation (.next/server/chunks/[root-of-the-server]__1b3e742b._.js:1:838)
+    at instantiateModule (.next/server/chunks/[turbopack]_runtime.js:715:9)
+    at getOrInstantiateModuleFromParent (.next/server/chunks/[turbopack]_runtime.js:738:12)
+    at Context.esmImport [as i] (.next/server/chunks/[turbopack]_runtime.js:228:20)
+    at module evaluation (.next/server/chunks/[root-of-the-server]__1b3e742b._.js:1:1150)
+    at instantiateModule (.next/server/chunks/[turbopack]_runtime.js:715:9)
+    at instantiateRuntimeModule (.next/server/chunks/[turbopack]_runtime.js:743:12)
+    at getOrInstantiateRuntimeModule (.next/server/chunks/[turbopack]_runtime.js:756:12)
+    at Object.m (.next/server/chunks/[turbopack]_runtime.js:765:18)
+
+> Build error occurred
+Error: Failed to collect page data for /seed
+    at ignore-listed frames {
+  type: 'Error'
+}
+[ELIFECYCLE] Command failed with exit code 1.
