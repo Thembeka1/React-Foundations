@@ -1,3 +1,4 @@
+
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { authConfig } from './auth.config';
@@ -6,7 +7,6 @@ import type { User } from '@/app/lib/definitions';
 import bcrypt from 'bcrypt';
 import postgres from 'postgres';
 
-
 const sql = postgres(process.env.POSTGRES_URL!, {
   ssl: 'require',
 });
@@ -14,24 +14,25 @@ const sql = postgres(process.env.POSTGRES_URL!, {
 // Fetch user from the database
 async function getUser(email: string): Promise<User | undefined> {
   try {
-    const user = await sql<User[]>`
+    const users = await sql<User[]>`
       SELECT * FROM users WHERE email = ${email}
     `;
 
-    return user[0];
+    return users[0];
   } catch (error) {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
   }
 }
 
-// NextAuth authentication configuration
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
+  secret: process.env.AUTH_SECRET,
+
   providers: [
     Credentials({
       async authorize(credentials) {
-        // Validate email and password using Zod
+        // Validate email and password
         const parsedCredentials = z
           .object({
             email: z.string().email(),
@@ -39,21 +40,28 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           })
           .safeParse(credentials);
 
-        if (parsedCredentials.success) {
-          const { email, password } = parsedCredentials.data;
+        if (!parsedCredentials.success) {
+          console.log('Invalid credentials');
+          return null;
+        }
 
-          // Find user in database
-          const user = await getUser(email);
+        const { email, password } = parsedCredentials.data;
 
-          if (!user) return null;
+        // Find user in the database
+        const user = await getUser(email);
 
-          // Compare entered password with hashed password
-          const passwordsMatch = await bcrypt.compare(
-            password,
-            user.password,
-          );
+        if (!user) {
+          return null;
+        }
 
-          if (passwordsMatch) return user;
+        // Compare entered password with hashed password
+        const passwordsMatch = await bcrypt.compare(
+          password,
+          user.password,
+        );
+
+        if (passwordsMatch) {
+          return user;
         }
 
         console.log('Invalid credentials');
