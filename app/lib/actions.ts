@@ -29,7 +29,7 @@ export async function authenticate(
     throw error;
   }
 }
-// Invoice validation schema
+// Invoice validation schema zod
 const FormSchema = z.object({
   id: z.string(),
   customerId: z.string({
@@ -88,7 +88,8 @@ export async function updateInvoice(id: string, formData: FormData) {
 
 // Create invoice with server-side validation
 export async function createInvoice(prevState: State, formData: FormData) {
-  // Validate form using Zod
+  
+    // Validate form using Zod
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
