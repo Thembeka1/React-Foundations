@@ -8,9 +8,10 @@ import bcrypt from 'bcrypt';
 import postgres from 'postgres';
 
 const sql = postgres(process.env.POSTGRES_URL!, {
-  ssl: 'require',
+  ssl: process.env.POSTGRES_URL?.includes('127.0.0.1')
+    ? false
+    : 'require',
 });
-
 // Fetch user from the database
 async function getUser(email: string): Promise<User | undefined> {
   try {

@@ -8,7 +8,11 @@ import {
   users,
 } from '../lib/placeholder-data';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = postgres(process.env.POSTGRES_URL!, {
+  ssl: process.env.POSTGRES_URL?.includes('127.0.0.1')
+    ? false
+    : 'require',
+});
 
 async function seedUsers() {
  
