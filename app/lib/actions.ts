@@ -61,10 +61,21 @@ export type State = {
   message?: string | null;
 };
 
+// REFRESH INVOICE-RELATED PAGES
+function refreshInvoicePages() {
+  revalidatePath('/dashboard');
+  revalidatePath('/dashboard/invoices');
+  revalidatePath('/dashboard/customers');
+}
+
 // DELETE INVOICE
 export async function deleteInvoice(id: string) {
-  await sql`DELETE FROM invoices WHERE id = ${id}`;
-  revalidatePath('/dashboard/invoices');
+  await sql`
+    DELETE FROM invoices
+    WHERE id = ${id}
+  `;
+
+  refreshInvoicePages();
 }
 
 // UPDATE INVOICE
@@ -85,12 +96,16 @@ export async function updateInvoice(id: string, formData: FormData) {
     WHERE id = ${id}
   `;
 
-  revalidatePath('/dashboard/invoices');
+  refreshInvoicePages();
+
   redirect('/dashboard/invoices');
 }
 
 // CREATE INVOICE
-export async function createInvoice(prevState: State, formData: FormData) {
+export async function createInvoice(
+  prevState: State,
+  formData: FormData,
+) {
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -105,6 +120,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
   }
 
   const { customerId, amount, status } = validatedFields.data;
+
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split('T')[0];
 
@@ -115,12 +131,14 @@ export async function createInvoice(prevState: State, formData: FormData) {
     `;
   } catch (error) {
     console.error('Database Error:', error);
+
     return {
       message: 'Database Error: Failed to Create Invoice.',
     };
   }
 
-  revalidatePath('/dashboard/invoices');
+  refreshInvoicePages();
+
   redirect('/dashboard/invoices');
 }
 
@@ -147,6 +165,12 @@ export type CustomerState = {
   };
   message?: string | null;
 };
+
+// REFRESH CUSTOMER-RELATED PAGES
+function refreshCustomerPages() {
+  revalidatePath('/dashboard');
+  revalidatePath('/dashboard/customers');
+}
 
 // CREATE CUSTOMER
 export async function createCustomer(
@@ -175,17 +199,22 @@ export async function createCustomer(
     `;
   } catch (error) {
     console.error('Database Error:', error);
+
     return {
       message: 'Database Error: Failed to Create Customer.',
     };
   }
 
-  revalidatePath('/dashboard/customers');
+  refreshCustomerPages();
+
   redirect('/dashboard/customers');
 }
 
 // UPDATE CUSTOMER
-export async function updateCustomer(id: string, formData: FormData) {
+export async function updateCustomer(
+  id: string,
+  formData: FormData,
+) {
   const validatedFields = UpdateCustomer.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -206,29 +235,34 @@ export async function updateCustomer(id: string, formData: FormData) {
     WHERE id = ${id}
   `;
 
-  revalidatePath('/dashboard/customers');
+  refreshCustomerPages();
   revalidatePath(`/dashboard/customers/${id}`);
+
   redirect('/dashboard/customers');
 }
 
 // DELETE CUSTOMER
 export async function deleteCustomer(id: string) {
+  // Check whether the customer has invoices
   const invoices = await sql`
-    SELECT id FROM invoices
+    SELECT id
+    FROM invoices
     WHERE customer_id = ${id}
     LIMIT 1
   `;
 
+  // Prevent deletion if invoices exist
   if (invoices.length > 0) {
     throw new Error(
       'This customer has invoices and cannot be deleted.',
     );
   }
 
+  // Delete customer if no invoices exist
   await sql`
     DELETE FROM customers
     WHERE id = ${id}
   `;
 
-  revalidatePath('/dashboard/customers');
+  refreshCustomerPages();
 }
