@@ -1,10 +1,16 @@
+
 import Form from '@/app/ui/invoices/create-form';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchCustomers } from '@/app/lib/data';
- 
-export default async function Page() {
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ customerId?: string }>;
+}) {
   const customers = await fetchCustomers();
- 
+  const { customerId } = await searchParams;
+
   return (
     <main>
       <Breadcrumbs
@@ -17,7 +23,10 @@ export default async function Page() {
           },
         ]}
       />
-      <Form customers={customers} />
+      <Form
+        customers={customers}
+        selectedCustomerId={customerId}
+      />
     </main>
   );
 }

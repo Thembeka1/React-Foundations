@@ -15,9 +15,11 @@ import { Button } from '@/app/ui/button';
 
 export default function Form({
   customers,
+  selectedCustomerId,
 }: {
   customers: CustomerField[];
-}) {
+  selectedCustomerId?: string;
+})  {
   const initialState = { message: '', errors: {} };
 
   const [state, formAction] = useActionState(createInvoice, initialState);
@@ -35,7 +37,7 @@ export default function Form({
               id="customer"
               name="customerId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-              defaultValue=""
+              defaultValue={selectedCustomerId ?? ''}
               aria-describedby="customer-error"
             >
               <option value="" disabled>
