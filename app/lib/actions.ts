@@ -14,7 +14,10 @@ const sql = postgres(process.env.POSTGRES_URL!, {
     : 'require',
 });
 
+// ======================================
 // AUTHENTICATION
+// ======================================
+
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
@@ -34,7 +37,20 @@ export async function authenticate(
   }
 }
 
+// ======================================
+// REFRESH ALL AFFECTED PAGES
+// ======================================
+
+function refreshDashboardPages() {
+  revalidatePath('/dashboard');
+  revalidatePath('/dashboard/invoices');
+  revalidatePath('/dashboard/customers');
+}
+
+// ======================================
 // INVOICE VALIDATION
+// ======================================
+
 const FormSchema = z.object({
   id: z.string(),
   customerId: z.string({
@@ -49,8 +65,15 @@ const FormSchema = z.object({
   date: z.string(),
 });
 
-const CreateInvoice = FormSchema.omit({ id: true, date: true });
-const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+const CreateInvoice = FormSchema.omit({
+  id: true,
+  date: true,
+});
+
+const UpdateInvoice = FormSchema.omit({
+  id: true,
+  date: true,
+});
 
 export type State = {
   errors?: {
@@ -61,25 +84,27 @@ export type State = {
   message?: string | null;
 };
 
-// REFRESH INVOICE-RELATED PAGES
-function refreshInvoicePages() {
-  revalidatePath('/dashboard');
-  revalidatePath('/dashboard/invoices');
-  revalidatePath('/dashboard/customers');
-}
-
+// ======================================
 // DELETE INVOICE
+// ======================================
+
 export async function deleteInvoice(id: string) {
   await sql`
     DELETE FROM invoices
     WHERE id = ${id}
   `;
 
-  refreshInvoicePages();
+  refreshDashboardPages();
 }
 
+// ======================================
 // UPDATE INVOICE
-export async function updateInvoice(id: string, formData: FormData) {
+// ======================================
+
+export async function updateInvoice(
+  id: string,
+  formData: FormData,
+) {
   const { customerId, amount, status } = UpdateInvoice.parse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -96,12 +121,15 @@ export async function updateInvoice(id: string, formData: FormData) {
     WHERE id = ${id}
   `;
 
-  refreshInvoicePages();
+  refreshDashboardPages();
 
   redirect('/dashboard/invoices');
 }
 
+// ======================================
 // CREATE INVOICE
+// ======================================
+
 export async function createInvoice(
   prevState: State,
   formData: FormData,
@@ -137,16 +165,15 @@ export async function createInvoice(
     };
   }
 
-  refreshInvoicePages();
+  refreshDashboardPages();
 
   redirect('/dashboard/invoices');
 }
 
 // ======================================
-// CUSTOMER CRUD FUNCTIONS
+// CUSTOMER VALIDATION
 // ======================================
 
-// CUSTOMER VALIDATION
 const CustomerSchema = z.object({
   name: z.string().min(1, 'Please enter the customer name.'),
   email: z.string().email('Please enter a valid email address.'),
@@ -156,7 +183,10 @@ const CustomerSchema = z.object({
 const CreateCustomer = CustomerSchema;
 const UpdateCustomer = CustomerSchema;
 
+// ======================================
 // CUSTOMER STATE
+// ======================================
+
 export type CustomerState = {
   errors?: {
     name?: string[];
@@ -166,13 +196,10 @@ export type CustomerState = {
   message?: string | null;
 };
 
-// REFRESH CUSTOMER-RELATED PAGES
-function refreshCustomerPages() {
-  revalidatePath('/dashboard');
-  revalidatePath('/dashboard/customers');
-}
-
+// ======================================
 // CREATE CUSTOMER
+// ======================================
+
 export async function createCustomer(
   prevState: CustomerState,
   formData: FormData,
@@ -205,12 +232,15 @@ export async function createCustomer(
     };
   }
 
-  refreshCustomerPages();
+  refreshDashboardPages();
 
   redirect('/dashboard/customers');
 }
 
+// ======================================
 // UPDATE CUSTOMER
+// ======================================
+
 export async function updateCustomer(
   id: string,
   formData: FormData,
@@ -235,15 +265,18 @@ export async function updateCustomer(
     WHERE id = ${id}
   `;
 
-  refreshCustomerPages();
+  refreshDashboardPages();
   revalidatePath(`/dashboard/customers/${id}`);
 
   redirect('/dashboard/customers');
 }
 
+// ======================================
 // DELETE CUSTOMER
+// ======================================
+
 export async function deleteCustomer(id: string) {
-  // Check whether the customer has invoices
+  // Check whether the customer has invoices.
   const invoices = await sql`
     SELECT id
     FROM invoices
@@ -251,18 +284,18 @@ export async function deleteCustomer(id: string) {
     LIMIT 1
   `;
 
-  // Prevent deletion if invoices exist
+  // Protect invoices from being lost.
   if (invoices.length > 0) {
     throw new Error(
       'This customer has invoices and cannot be deleted.',
     );
   }
 
-  // Delete customer if no invoices exist
+  // Delete customer if no invoices exist.
   await sql`
     DELETE FROM customers
     WHERE id = ${id}
   `;
 
-  refreshCustomerPages();
+  refreshDashboardPages();
 }
